@@ -1,0 +1,57 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Expense {
+  amount      Float?
+  createdAt   DateTime  @default(now())
+  date        DateTime?
+  description String?
+  id          String    @id @default(cuid())
+  payer       String?
+  trip        Trip?     @relation(fields: [tripId], references: [id])
+  tripId      String?
+  updatedAt   DateTime  @updatedAt
+}
+
+model Trip {
+  createdAt   DateTime  @default(now())
+  destination String?
+  endDate     DateTime?
+  expenses    Expense[]
+  id          String    @id @default(cuid())
+  name        String?
+  startDate   DateTime?
+  updatedAt   DateTime  @updatedAt
+  users       User[]
+}
+
+model FriendGroup {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  name      String?
+  updatedAt DateTime @updatedAt
+  users     User[]
+}
+
+model User {
+  createdAt     DateTime     @default(now())
+  email         String?      @unique
+  firstName     String?
+  friendGroup   FriendGroup? @relation(fields: [friendGroupId], references: [id])
+  friendGroupId String?
+  id            String       @id @default(cuid())
+  lastName      String?
+  name          String?
+  password      String
+  roles         Json
+  trip          Trip?        @relation(fields: [tripId], references: [id])
+  tripId        String?
+  updatedAt     DateTime     @updatedAt
+  username      String       @unique
+}
